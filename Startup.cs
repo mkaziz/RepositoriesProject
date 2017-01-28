@@ -31,6 +31,7 @@ namespace RepositoriesProject
             // Add framework services.
             services.AddMvc();
             services.AddScoped<IGithubService, GithubService>();
+            services.AddSingleton(_ => Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

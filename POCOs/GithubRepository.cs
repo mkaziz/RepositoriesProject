@@ -194,7 +194,7 @@ namespace RepositoriesProject.POCOs
         public int ForksCount { get; set; }
 
         [JsonProperty("mirror_url")]
-        public object MirrorUrl { get; set; }
+        public string MirrorUrl { get; set; }
 
         [JsonProperty("open_issues_count")]
         public int OpenIssuesCount { get; set; }
@@ -211,7 +211,7 @@ namespace RepositoriesProject.POCOs
         [JsonProperty("default_branch")]
         public string DefaultBranch { get; set; }
 
-        [JsonProperty("permissions")]
-        public Permissions Permissions { get; set; }
+        // [JsonProperty("permissions")]
+        // public Permissions Permissions { get; set; }
     }
 }

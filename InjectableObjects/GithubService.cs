@@ -4,18 +4,24 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using RepositoriesProject.Database;
 using RepositoriesProject.POCOs;
 
 namespace RepositoriesProject.InjectableObjects
 {
     public class GithubService : IGithubService
     {
-        public GithubService()
+        IConfigurationRoot Configuration { get; }
+        public GithubService(IConfigurationRoot configuration)
         {
-            
+            Configuration = configuration;
         }
-
+        // public GithubService()
+        // {
+            
+        // }
         public async Task<List<GithubRepository>> RetrieveRepositories(string organizationName)
         {
             using (var client = new HttpClient())
@@ -28,12 +34,21 @@ namespace RepositoriesProject.InjectableObjects
                     response.EnsureSuccessStatusCode(); // Throw in not success
 
                     var stringResponse = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<List<GithubRepository>>(stringResponse);
+                    var results = JsonConvert.DeserializeObject<List<GithubRepository>>(stringResponse);
+
+                    using (var context = new GithubRepositoryDataContext(Configuration)) 
+                    {
+                        context.Database.EnsureCreated();
+                        context.AddRange(results);
+                        context.SaveChanges();
+                    }
+
+                    return results;
                 }
-                catch (HttpRequestException e)
+                catch (Exception e)
                 {
                     // do some real error logging
-                    Console.WriteLine($"Request exception: {e.Message}");
+                    Console.WriteLine($"Exception: {e.Message}");
                 }
             }
             return new List<GithubRepository>();
