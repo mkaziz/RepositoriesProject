@@ -4,11 +4,11 @@ In order to get this to run, make sure you have a MySQL database running, and up
 
 Additionally, to handle the messaging portion, you'll need to have a RabbitMQ server configured to run on your local machine with all default ports, etc
 
-Project was built and tested on Zorin OS 12 (based on Ubuntu 16.04).
+Project was built and tested on Zorin OS 12 (based on Ubuntu 16.04) with VS Code and OmniSharp.
 
 # Improvements
 * Handle taking in input parameters for loading repositories by organization name, as well as retrieving them by the same
 * Clean up Queuing Service
 * Factor out EF logic to a separate service and make it dependency injectable so that the GithubService is more unit testable
-* Figure out a way to make the HttpClient call that gets the Github repos is also not "newed" up and dependency injectable
+* Figure out a way to make it so that the HttpClient call that gets the Github repos is not "newed" up and is dependency injectable
 
