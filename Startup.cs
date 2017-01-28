@@ -31,14 +31,16 @@ namespace RepositoriesProject
             // Add framework services.
             services.AddMvc();
             services.AddScoped<IGithubService, GithubService>();
+            services.AddSingleton<IQueuingService, QueuingService>();
             services.AddSingleton(_ => Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IQueuingService queuingService)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+            queuingService.SetupReceiver();
 
             app.UseMvc();
         }

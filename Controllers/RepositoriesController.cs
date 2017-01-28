@@ -21,7 +21,7 @@ namespace RepositoriesProject.Controllers
         public IEnumerable<GithubRepository> Get()
         {
             // pull from SQL?
-            return GithubService.RetrieveRepositories("gopangea").Result;
+            return GithubService.RetrieveRepositoriesFromStore();
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RepositoriesProject.Database;
@@ -18,11 +19,8 @@ namespace RepositoriesProject.InjectableObjects
         {
             Configuration = configuration;
         }
-        // public GithubService()
-        // {
-            
-        // }
-        public async Task<List<GithubRepository>> RetrieveRepositories(string organizationName)
+
+        public async Task<List<GithubRepository>> RetrieveRepositoriesFromGithub(string organizationName)
         {
             using (var client = new HttpClient())
             {
@@ -39,7 +37,18 @@ namespace RepositoriesProject.InjectableObjects
                     using (var context = new GithubRepositoryDataContext(Configuration)) 
                     {
                         context.Database.EnsureCreated();
-                        context.AddRange(results);
+                        foreach (var item in results) 
+                        {
+                            if (!context.GithubRepositories.Any(i => i.Id == item.Id)) 
+                            {
+                                context.GithubRepositories.Add(item);
+                                var owner = context.Owners.FirstOrDefault(i => i.Id == item.Owner.Id);
+                                if (owner != null)
+                                    context.Entry(owner).State = EntityState.Unchanged;
+                            }
+                            else if (!context.Owners.Any(i => i.Id == item.Owner.Id))
+                                context.Owners.Add(item.Owner);
+                        }
                         context.SaveChanges();
                     }
 
@@ -47,11 +56,21 @@ namespace RepositoriesProject.InjectableObjects
                 }
                 catch (Exception e)
                 {
-                    // do some real error logging
+                    // TODO: do some real error logging here
                     Console.WriteLine($"Exception: {e.Message}");
                 }
             }
             return new List<GithubRepository>();
+        }
+
+        public List<GithubRepository> RetrieveRepositoriesFromStore()
+        {
+            using (var context = new GithubRepositoryDataContext(Configuration)) 
+            {
+                context.Database.EnsureCreated();
+                var results = context.GithubRepositories;
+                return results.ToList();
+            }
         }
     }
 }

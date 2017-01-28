@@ -7,9 +7,9 @@ using RepositoriesProject.POCOs;
 
 namespace RepositoriesProject.InjectableObjects
 {
-    public interface IGithubService 
+    public interface IQueuingService 
     {
-        Task<List<GithubRepository>> RetrieveRepositoriesFromGithub(string organizationName);
-        List<GithubRepository> RetrieveRepositoriesFromStore();
+        bool SendMessage();
+        void SetupReceiver();
     }
 }
